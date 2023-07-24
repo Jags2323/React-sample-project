@@ -2,14 +2,18 @@
 import Header from "./components/Header/Header";
 import UserInput from "./components/UserInput/UserInput";
 import InvsResult from "./components/InvsResult/InvsResult";
+import { useState } from "react";
 
 function App() {
+  const [userInput, setUserInput] =  useState(null);
   const calculateHandler = (userInput) => {
-    // Should be triggered when form is submitted
-    // You might not directly want to bind it to the submit event on the form though...
+    setUserInput(userInput);
 
-    const yearlyData = []; // per-year results
+  };
 
+  const yearlyData = []; 
+
+  if(userInput){
     let currentSavings = +userInput['current-savings']; // feel free to change the shape of this input object!
     const yearlyContribution = +userInput['yearly-contribution']; // as mentioned: feel free to change the shape...
     const expectedReturn = +userInput['expected-return'] / 100;
@@ -20,22 +24,22 @@ function App() {
       const yearlyInterest = currentSavings * expectedReturn;
       currentSavings += yearlyInterest + yearlyContribution;
       yearlyData.push({
-        // feel free to change the shape of the data pushed to the array!
         year: i + 1,
         yearlyInterest: yearlyInterest,
         savingsEndOfYear: currentSavings,
         yearlyContribution: yearlyContribution,
       });
     }
+  }
 
-    // do something with yearlyData ...
-  };
+  
 
   return (
     <div>
       <Header/>
-      <UserInput/>
-      <InvsResult/>
+      <UserInput onCalculate={calculateHandler}/>
+      {!userInput && <p>No user Input</p>}
+      {userInput && <InvsResult data={yearlyData} initialInvestment={userInput['current-savings']}/>}
     </div>
   );
 }
